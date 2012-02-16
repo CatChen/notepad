@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Notepad</title>
+	<script type="text/javascript" src="javascripts/jquery-1.7.1.js"></script>
+	<script type="text/javascript" src="javascripts/underscore.js"></script>
+	<script type="text/javascript" src="javascripts/backbone.js"></script>
+	<script type="text/javascript">
+$(function() {
+    /* data transfer property is needed in drag and drop events */
+    $.event.props.push('dataTransfer');
+    
+    $('.dropZone').on('dragover', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        e.dataTransfer.dropEffect = 'copy';
+    });
+    
+    $('.dropZone').on('drop', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        var files = e.dataTransfer.files;
+        for (var i = 0, l = files.length; i < l; i++) {
+            (function(file) {
+                var reader = new FileReader();
+                
+                reader.readAsText(file);
+                
+                reader.onload = function(e) {
+                    console.log(e.target.result);
+                    $('#editor').val(e.target.result);
+                };
+                
+                reader.onerror = function(e) {
+                    console.log('file reading error');
+                    console.log(e);
+                    console.log(file);
+                };
+                
+                reader.onprogress = function(e) {
+                    console.log('file reading progress');
+                    console.log(e.loaded / e.total);
+                };
+            })(files[i]);
+        }
+    });
+});
+	</script>
+</head>
+<body>
+	<textarea id="editor" class="dropZone"></textarea>
+</body>
+</html>
