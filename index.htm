@@ -12,6 +12,10 @@ var File = Backbone.Model.extend({
 });
 	</script>
 	<script type="text/javascript">
+window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder;
+window.URL = window.URL || window.webkitURL;
+	</script>
+	<script type="text/javascript">
 $(function() {
     /* data transfer property is needed in drag and drop events */
     $.event.props.push('dataTransfer');
@@ -57,10 +61,32 @@ $(function() {
             })(files[i]);
         }
     });
+    
+    $('#save').on('click', function(e) {
+        if ($(this).attr('href') === '###') {
+            e.stopPropagation();
+            e.preventDefault();
+
+            var builder = new BlobBuilder();
+            builder.append($('#editor').val());
+            var blob = builder.getBlob();
+            var dataURL = URL.createObjectURL(blob);
+            var clickEvent = document.createEvent("MouseEvent");
+            clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            $(this).attr('href', dataURL);
+            this.dispatchEvent(clickEvent);
+            
+            setTimeout(function() {
+                URL.revokeObjectURL(dataURL);
+                $('#save').attr('href', '###');
+            }, 0);
+        }
+    });
 });
 	</script>
 </head>
 <body>
 	<textarea id="editor" class="dropZone"></textarea>
+	<a id="save" href="###" download="test.txt">Save</a>
 </body>
 </html>
