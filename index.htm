@@ -7,6 +7,11 @@
 	<script type="text/javascript" src="javascripts/underscore.js"></script>
 	<script type="text/javascript" src="javascripts/backbone.js"></script>
 	<script type="text/javascript">
+var File = Backbone.Model.extend({
+    
+});
+	</script>
+	<script type="text/javascript">
 $(function() {
     /* data transfer property is needed in drag and drop events */
     $.event.props.push('dataTransfer');
@@ -19,6 +24,11 @@ $(function() {
     });
     
     $('.dropZone').on('drop', function(e) {
+        if (e.dataTransfer.files.length === 0) {
+            /* stop file drop handling when there is no file */
+            return;
+        }
+        
         e.stopPropagation();
         e.preventDefault();
         
