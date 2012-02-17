@@ -10,6 +10,91 @@
 	<script type="text/javascript" src="javascripts/models.js"></script>
 	<script type="text/javascript">
 $(function() {
+    var FileView = window.FileView = Backbone.View.extend({
+        tagName: 'li',
+        template: _.template($('#fileViewTemplate').html()),
+        events: {
+            'click li': 'open'
+        },
+        initialize: function() {
+            this.model.bind('change', this.render, this);
+            this.model.bind('destroy', this.$el.remove, this.$el);
+        },
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+        },
+        open: function() {
+            console.log('opening file:');
+            console.log(this.model.toJSON());
+        }
+    });
+
+    var FileListView = window.FileListView = Backbone.View.extend({
+        initialize: function() {
+        },
+        render: function() {
+
+        }
+    });
+
+    var fileList = new FileListView({
+        el: $('#fileList'),
+        model: root
+    });
+});
+	</script>
+	<script type="text/javascript">
+/* temporarily disabled sync */
+Backbone.sync = function(method, model, options) {
+    switch (method) {
+    case "read":
+        resp = model.id ? store.find(model) : store.findAll();
+        break;
+    case "create":
+        resp = store.create(model);
+        break;
+    case "update":
+        resp = store.update(model);
+        break;
+    case "delete":
+        resp = store.destroy(model);
+        break;
+    }
+
+  if (resp) {
+    options.success(resp);
+  } else {
+    options.error("Record not found");
+  }
+};
+
+root.create({
+    name: 'test1.txt',
+    size: 12,
+    date: new Date(),
+    content: 'Hello, world'
+})
+root.create({
+    name: 'test2.txt',
+    size: 12,
+    date: new Date(),
+    content: 'Hello, world'
+})
+root.create({
+    name: 'test3.txt',
+    size: 12,
+    date: new Date(),
+    content: 'Hello, world'
+})
+root.create({
+    name: 'test4.txt',
+    size: 12,
+    date: new Date(),
+    content: 'Hello, world'
+})
+	</script>
+	<script type="text/javascript">
+$(function() {
     /* data transfer property is needed in drag and drop events */
     $.event.props.push('dataTransfer');
     
@@ -86,13 +171,12 @@ $(function() {
     });
 });
 	</script>
+	<script id="fileViewTemplate" type="text/template">
+        <li title="<%=date%>"><%=name%></li>
+	</script>
 </head>
 <body>
-    <ul id="fileList" class="dropZone">
-        <!--
-        <li id="file_{{cid}}" title="{{date}}">{{name}}</li>
-        -->
-    </ul>
+    <ul id="fileList" class="dropZone"></ul>
     <ul id="tabList">
         <!--
         <li id="tab_{{cid}}">{{name}}</li>
