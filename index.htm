@@ -6,15 +6,8 @@
 	<script type="text/javascript" src="javascripts/jquery-1.7.1.js"></script>
 	<script type="text/javascript" src="javascripts/underscore.js"></script>
 	<script type="text/javascript" src="javascripts/backbone.js"></script>
-	<script type="text/javascript">
-var File = Backbone.Model.extend({
-    
-});
-	</script>
-	<script type="text/javascript">
-window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder;
-window.URL = window.URL || window.webkitURL;
-	</script>
+	<script type="text/javascript" src="javascripts/polyfill.js"></script>
+	<script type="text/javascript" src="javascripts/models.js"></script>
 	<script type="text/javascript">
 $(function() {
     /* data transfer property is needed in drag and drop events */
@@ -39,12 +32,21 @@ $(function() {
         var files = e.dataTransfer.files;
         for (var i = 0, l = files.length; i < l; i++) {
             (function(file) {
+                console.log(file);
                 var reader = new FileReader();
                 
                 reader.readAsText(file);
                 
                 reader.onload = function(e) {
                     console.log(e.target.result);
+                    
+                    root.add({
+                        name: file.name,
+                        size: file.size,
+                        date: file.lastModifiedDate.getTime(),
+                        content: e.target.result
+                    });
+                    
                     $('#editor').val(e.target.result);
                 };
                 
@@ -86,7 +88,21 @@ $(function() {
 	</script>
 </head>
 <body>
-	<textarea id="editor" class="dropZone"></textarea>
-	<a id="save" href="###" download="test.txt">Save</a>
+    <ul id="fileList" class="dropZone">
+        <!--
+        <li id="file_{{cid}}" title="{{date}}">{{name}}</li>
+        -->
+    </ul>
+    <ul id="tabList">
+        <!--
+        <li id="tab_{{cid}}">{{name}}</li>
+        -->
+    </ul>
+    <div id="editors">
+        <!--
+        <textarea id="editor_{{cid}}" class="editor"></textarea>
+        -->
+    </div>
+	<!--<a id="save" href="###" download="test.txt">Save</a>-->
 </body>
 </html>
